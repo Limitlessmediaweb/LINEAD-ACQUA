@@ -65,7 +65,7 @@ export function Footer({ rise = false }: { rise?: boolean }) {
   );
 
   return (
-    <footer ref={root} className="relative h-[100svh] min-h-[600px] overflow-clip bg-abisso" data-film>
+    <footer ref={root} className="relative h-[100svh] min-h-[600px] overflow-clip" data-film>
       <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: useGL && glReady ? 0 : 1 }} aria-hidden>
         <Image src="/media/bay-blue.webp" alt="" fill sizes="100vw" className="object-cover" />
         {rise && (

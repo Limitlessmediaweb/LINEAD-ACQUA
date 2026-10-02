@@ -136,11 +136,11 @@ export function ChapterMaterials() {
       <div
         ref={stage}
         data-cursor="scopri"
-        className="absolute left-1/2 top-[56%] aspect-[4/5] w-[min(78vw,52svh)] -translate-x-1/2 -translate-y-1/2 overflow-clip md:aspect-[16/10] md:w-[min(58vw,96svh)]"
+        className="absolute left-1/2 top-[56%] aspect-[4/5] w-[min(70vw,48svh)] -translate-x-1/2 -translate-y-1/2 overflow-clip md:w-[min(34vw,54svh)]"
       >
         {MATERIALS.map((m) => (
           <div key={m.id} className="mat-foto absolute inset-0 overflow-clip">
-            <Image src={m.src} alt={m.alt} fill sizes="(max-width: 768px) 78vw, 58vw" className="object-cover" />
+            <Image src={m.src} alt={m.alt} fill sizes="(max-width: 768px) 70vw, 34vw" className="object-cover" />
           </div>
         ))}
         <div

@@ -134,7 +134,7 @@ export const ROOMS = [
     caption: "Il mare all'altezza del cuscino.",
     poster: "/media/video/int-cabina-poster.webp",
     labels: [
-      { text: "Lino naturale", x: 0.5, y: 0.66, lx: 0.4, ly: 0.86 },
+      { text: "Lino naturale", x: 0.55, y: 0.62, lx: 0.68, ly: 0.5 },
       { text: "Teak birmano", x: 0.16, y: 0.42, lx: 0.24, ly: 0.24 },
       { text: "Vetro di scafo", x: 0.84, y: 0.4, lx: 0.86, ly: 0.2 },
     ],

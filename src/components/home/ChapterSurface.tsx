@@ -55,7 +55,7 @@ export function ChapterSurface() {
   const hideDom = caps.gl && glReady;
 
   return (
-    <section ref={root} id="superficie" data-film className="relative bg-abisso" aria-labelledby="sup-titolo">
+    <section ref={root} id="superficie" data-film className="relative" aria-labelledby="sup-titolo">
       <div ref={pin} className="relative h-[100svh] min-h-[560px] overflow-clip">
         <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: hideDom ? 0 : 1 }} aria-hidden>
           <div className="sup-sopra absolute inset-0">

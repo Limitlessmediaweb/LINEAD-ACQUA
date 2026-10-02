@@ -30,7 +30,9 @@ await page.goto(url, { waitUntil: "networkidle", timeout: 120000 });
 await page.waitForTimeout(args.intro ? +(args.introwait || 2500) : 2000);
 
 const tag = args.tag || `${w}x${h}`;
-for (const f of at) {
+// --plan "linea:0.1,0.5|giorno:0,1" = più capitoli in una sola sessione
+const plan = args.plan ? String(args.plan).split("|").flatMap((p) => { const [s, fr] = p.split(":"); return fr.split(",").map((f) => ["#" + s, +f]); }) : at.map((f) => [args.sel, f]);
+for (const [sel, f] of plan) {
   const y = await page.evaluate(
     ([f, sel]) => {
       if (sel) {
@@ -42,7 +44,7 @@ for (const f of at) {
       }
       return (document.documentElement.scrollHeight - window.innerHeight) * f;
     },
-    [f, args.sel]
+    [f, sel]
   );
   await page.evaluate((y) => {
     const l = window.__lenis;
@@ -50,7 +52,7 @@ for (const f of at) {
     if (l) l.scrollTo(y, { immediate: true, force: true });
   }, y);
   await page.waitForTimeout(wait);
-  const name = path.join(out, `${tag}-${args.sel ? args.sel.replace(/[^a-z]/gi, "") + "-" : ""}${String(Math.round(f * 100)).padStart(3, "0")}.png`);
+  const name = path.join(out, `${tag}-${sel ? sel.replace(/[^a-z]/gi, "") + "-" : ""}${String(Math.round(f * 100)).padStart(3, "0")}.png`);
   await page.screenshot({ path: name });
   console.log("shot", name);
 }

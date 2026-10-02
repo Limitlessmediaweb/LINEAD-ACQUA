@@ -140,6 +140,11 @@ function HeroQuad({ view }: { view: RefObject<HTMLElement | null> }) {
 
   useFrame(() => {
     const video = glState.hero.video;
+    // il <video> può cambiare (16:9 <-> 9:16): la texture va ricreata sul nuovo elemento
+    if (texRef.current && texRef.current.image !== video) {
+      texRef.current.dispose();
+      texRef.current = null;
+    }
     if (video && !texRef.current && video.readyState >= 2) {
       const t = new THREE.VideoTexture(video);
       t.minFilter = THREE.LinearFilter;

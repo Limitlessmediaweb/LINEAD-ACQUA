@@ -88,7 +88,7 @@ export default function CantierePage() {
           <h2 id="tempo" className="titolo mt-4 text-[clamp(2.2rem,5vw,4.2rem)] text-spuma">
             Trentanove anni, <em className="italic text-sabbia">una linea.</em>
           </h2>
-          <p className="etichetta mt-4 text-[0.55rem] text-spuma/40">Cronologia dimostrativa</p>
+          <p className="etichetta mt-4 text-[0.62rem] text-spuma/60">Cronologia dimostrativa</p>
         </Reveal>
         <Timeline />
       </section>

@@ -76,7 +76,7 @@ export function Cursor() {
       className="pointer-events-none fixed left-0 top-0 z-[95] hidden size-[26px] items-center justify-center rounded-full border border-ottone opacity-0 backdrop-blur-[1px] [@media(pointer:fine)]:flex"
       style={{ translate: "-50% -50%" }}
     >
-      <span ref={label} className="etichetta text-[0.55rem] text-spuma opacity-0">
+      <span ref={label} className="etichetta text-[0.62rem] text-spuma opacity-0">
         Scopri
       </span>
     </div>

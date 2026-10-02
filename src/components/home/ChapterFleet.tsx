@@ -108,7 +108,7 @@ export function ChapterFleet() {
           { label: "Velocità", node: <Odometer value={m.speed} digits={2} />, unit: "nodi" },
         ].map((s) => (
           <div key={s.label}>
-            <dt className="etichetta text-[0.55rem] text-sabbia md:text-[0.6rem]">{s.label}</dt>
+            <dt className="etichetta text-[0.62rem] text-sabbia md:text-[0.6rem]">{s.label}</dt>
             <dd className="numero mt-2 flex items-baseline gap-1.5 text-[1.7rem] text-spuma md:text-4xl">
               {s.node}
               {s.unit && <span className="text-xs text-spuma/55 md:text-sm">{s.unit}</span>}

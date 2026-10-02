@@ -152,7 +152,7 @@ export function Intro() {
           </svg>
         </div>
       </div>
-      <h2 className="sr-only">LINEA D’ACQUA, cantiere navale italiano</h2>
+      <p className="sr-only">LINEA D’ACQUA, cantiere navale italiano</p>
 
       {/* la linea */}
       <div ref={lineWrap} className="intro-statico absolute left-1/2 top-1/2 w-[min(80vw,820px)] -translate-x-1/2 -translate-y-1/2">
@@ -162,7 +162,7 @@ export function Intro() {
       </div>
 
       <p className="intro-dissolvi intro-credito intro-statico etichetta absolute left-1/2 top-[calc(50%+min(13vw,140px))] w-full -translate-x-1/2 text-center text-[0.62rem] text-sabbia">
-        Un cantiere italiano — dal 1987 <span className="text-spuma/45">[dimostrativo]</span>
+        Un cantiere italiano — dal 1987 <span className="text-spuma/60">[dimostrativo]</span>
       </p>
 
       <button

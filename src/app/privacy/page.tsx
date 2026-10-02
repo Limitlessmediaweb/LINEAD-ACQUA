@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <>
       <article className="gutter mx-auto max-w-3xl pb-[16svh] pt-[24svh]">
-        <p className="etichetta inline-block border border-ottone/60 px-3 py-1.5 text-[0.58rem] text-ottone">Bozza — da validare con un consulente</p>
+        <p className="etichetta inline-block border border-ottone/60 px-3 py-1.5 text-[0.62rem] text-ottone">Bozza — da validare con un consulente</p>
         <h1 className="titolo mt-8 text-[clamp(3rem,8vw,6rem)] text-spuma">Privacy</h1>
         <div className="mt-12 space-y-8 text-[0.95rem] leading-relaxed text-spuma/75 [&_h2]:titolo [&_h2]:text-3xl [&_h2]:text-spuma">
           <p>

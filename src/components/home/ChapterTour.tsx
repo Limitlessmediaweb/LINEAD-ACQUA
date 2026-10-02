@@ -21,6 +21,7 @@ class FrameBank {
   private queue: [number, number][] = [];
   private running = 0;
   private started = false;
+  private stopped = false;
   onLoad: () => void = () => {};
 
   constructor(private rooms: string[], public count: number, private variant: "d" | "m") {
@@ -53,7 +54,14 @@ class FrameBank {
     for (let i = 0; i < 6; i++) this.next();
   }
 
+  /** interrompe il precaricamento (uscita dalla pagina) */
+  stop() {
+    this.stopped = true;
+    this.queue = [];
+  }
+
   private next() {
+    if (this.stopped) return;
     const job = this.queue.shift();
     if (!job) return;
     const [r, f] = job;
@@ -184,6 +192,7 @@ export function ChapterTour() {
     ro.observe(cv);
     resize();
     return () => {
+      b.stop();
       io.disconnect();
       ro.disconnect();
       cancelAnimationFrame(raf);

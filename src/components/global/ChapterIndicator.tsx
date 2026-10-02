@@ -46,7 +46,7 @@ export function ChapterIndicator() {
                 className="h-px bg-ottone transition-[width] duration-1000 [transition-timing-function:var(--ease-lusso)]"
                 style={{ width: active === c.n ? 18 : 0 }}
               />
-              <span aria-hidden className="etichetta text-[0.55rem] text-spuma/0 transition-colors duration-700 group-hover:text-spuma/70">
+              <span aria-hidden className="etichetta text-[0.62rem] text-spuma/0 transition-colors duration-700 group-hover:text-spuma/70">
                 {c.title}
               </span>
             </button>

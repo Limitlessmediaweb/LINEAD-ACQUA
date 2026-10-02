@@ -55,7 +55,7 @@ export function ModelSpecs({ model }: { model: Model }) {
       <dl className="mx-auto mt-10 grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 border-t border-spuma/10 pt-10 md:grid-cols-3 lg:grid-cols-6">
         {rows.map((r) => (
           <div key={r.label}>
-            <dt className="etichetta text-[0.58rem] text-sabbia">{r.label}</dt>
+            <dt className="etichetta text-[0.62rem] text-sabbia">{r.label}</dt>
             <dd className="numero mt-3 flex items-baseline gap-1.5 text-4xl text-spuma">
               <Odometer value={on ? r.v : 0} decimals={r.dec} digits={r.digits} />
               {r.unit && <span className="text-sm text-spuma/55">{r.unit}</span>}
@@ -63,13 +63,13 @@ export function ModelSpecs({ model }: { model: Model }) {
           </div>
         ))}
       </dl>
-      <p className="etichetta mx-auto mt-8 max-w-6xl text-[0.55rem] text-spuma/40">Tutti i dati sono dimostrativi.</p>
+      <p className="etichetta mx-auto mt-8 max-w-6xl text-[0.62rem] text-spuma/60">Tutti i dati sono dimostrativi.</p>
     </div>
   );
 }
 
 /** Walk tour corto: una stanza, fotogrammi sincronizzati con lo scroll. */
-export function MiniTour({ room, title }: { room: string; title: string }) {
+export function MiniTour({ room, title, caption }: { room: string; title: string; caption: string }) {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const frame = useRef(0);
@@ -85,7 +85,9 @@ export function MiniTour({ room, title }: { room: string; title: string }) {
     const seen = new Set<number>();
     let dirty = true;
     let started = false;
+    let alive = true;
     const loadNext = () => {
+      if (!alive) return;
       const i = order.shift();
       if (i === undefined) return;
       if (seen.has(i)) return loadNext();
@@ -144,6 +146,7 @@ export function MiniTour({ room, title }: { room: string; title: string }) {
     const ro = new ResizeObserver(resize);
     ro.observe(cv);
     return () => {
+      alive = false;
       io.disconnect();
       ro.disconnect();
       cancelAnimationFrame(raf);
@@ -170,12 +173,13 @@ export function MiniTour({ room, title }: { room: string; title: string }) {
 
   return (
     <section ref={root} className="relative h-[100svh] min-h-[520px] overflow-clip bg-black" aria-label={`Walk tour: ${title}`}>
-      <Image src={`/media/video/int-${room}-poster.webp`} alt={title} fill sizes="100vw" className="object-cover" />
+      <Image src={`/media/video/int-${room}-poster.webp`} alt={`${title}: ${caption}`} fill sizes="100vw" className="object-cover" />
       <canvas ref={canvas} className="absolute inset-0 h-full w-full motion-reduce:hidden" aria-hidden />
       <div aria-hidden className="scrim-b pointer-events-none absolute inset-x-0 bottom-0 h-1/2" />
       <div className="gutter absolute inset-x-0 bottom-[10svh]">
         <p className="etichetta text-[0.6rem] text-ottone">A bordo</p>
         <h2 className="titolo mt-3 text-[clamp(2.4rem,6vw,5rem)] text-spuma">{title}</h2>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-spuma/75 md:text-base">{caption}</p>
       </div>
     </section>
   );

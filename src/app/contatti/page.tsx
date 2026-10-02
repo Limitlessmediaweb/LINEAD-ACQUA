@@ -33,7 +33,7 @@ export default function ContattiPage() {
             <dl className="divide-y divide-spuma/10 border-y border-spuma/10">
               {ROWS.map((r) => (
                 <div key={r.label} className="grid grid-cols-[7rem_1fr] gap-6 py-5 md:grid-cols-[9rem_1fr]">
-                  <dt className="etichetta pt-1 text-[0.58rem] text-sabbia">{r.label}</dt>
+                  <dt className="etichetta pt-1 text-[0.62rem] text-sabbia">{r.label}</dt>
                   <dd className="text-base text-spuma/85">{r.value}</dd>
                 </div>
               ))}
@@ -47,7 +47,7 @@ export default function ContattiPage() {
                 Richiedi una prova in mare
                 <span aria-hidden className="block h-px w-6 bg-current transition-[width] duration-700 group-hover:w-10" />
               </Link>
-              <p className="text-xs text-spuma/45">Cantiere immaginario: i recapiti sono da completare.</p>
+              <p className="text-xs text-spuma/60">Cantiere immaginario: i recapiti sono da completare.</p>
             </div>
           </Reveal>
         </div>

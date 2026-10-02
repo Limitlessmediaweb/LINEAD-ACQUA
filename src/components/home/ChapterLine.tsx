@@ -94,7 +94,7 @@ export function ChapterLine() {
 
       <div className="bp-titolo gutter absolute inset-x-0 top-[16svh] flex items-start justify-between gap-6 md:top-[15svh]">
         <ChapterTitle n={2} />
-        <p className="etichetta hidden text-right text-[0.6rem] text-spuma/45 md:block">
+        <p className="etichetta hidden text-right text-[0.6rem] text-spuma/60 md:block">
           Tav. 01 / 3000 — Profilo laterale
           <br />
           Scala 1:50 — LDA 32
@@ -137,7 +137,7 @@ export function ChapterLine() {
         </svg>
         <div className="bp-quote pointer-events-none absolute inset-0">
           <p
-            className="bp-quota-testo etichetta absolute -translate-x-1/2 translate-y-3 text-[0.55rem] text-ottone md:text-[0.62rem]"
+            className="bp-quota-testo etichetta absolute -translate-x-1/2 translate-y-3 text-[0.62rem] text-ottone md:text-[0.62rem]"
             style={{ left: `${DIMENSIONS.length.labelX * 100}%`, top: `${DIMENSIONS.length.labelY * 100}%` }}
           >
             L.f.t. 32,00 m
@@ -161,7 +161,7 @@ export function ChapterLine() {
           </div>
         ))}
       </dl>
-      <p className="etichetta absolute inset-x-0 bottom-[17svh] text-center text-[0.55rem] text-spuma/40 md:bottom-[13svh]">Dati dimostrativi</p>
+      <p className="etichetta absolute inset-x-0 bottom-[17svh] text-center text-[0.62rem] text-spuma/60 md:bottom-[13svh]">Dati dimostrativi</p>
 
       <h2 id="linea-titolo" className="bp-didascalia titolo gutter absolute inset-x-0 bottom-[6svh] text-center text-[clamp(2rem,5vw,4.2rem)] text-spuma">
         Tremila disegni. <em className="italic text-sabbia">Un’unica linea.</em>

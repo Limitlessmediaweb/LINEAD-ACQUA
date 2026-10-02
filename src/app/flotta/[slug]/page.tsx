@@ -63,14 +63,14 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         <ModelSpecs model={m} />
       </section>
 
-      <MiniTour room={m.tour} title={`${room.name}. ${room.caption}`} />
+      <MiniTour room={m.tour} title={room.name} caption={room.caption} />
 
       <section className="gutter py-[16svh]" aria-labelledby="galleria">
         <Reveal className="mx-auto mb-12 flex max-w-6xl items-end justify-between">
           <h2 id="galleria" className="titolo text-[clamp(2.2rem,5vw,4.2rem)] text-spuma">
             Galleria
           </h2>
-          <p className="etichetta text-[0.58rem] text-spuma/45">Immagini generate per il concept</p>
+          <p className="etichetta text-[0.62rem] text-spuma/60">Immagini generate per il concept</p>
         </Reveal>
         <Reveal className="mx-auto grid max-w-6xl gap-4 md:grid-cols-[1.4fr_1fr] md:grid-rows-2 md:gap-5">
           {m.gallery.map((g, k) => (

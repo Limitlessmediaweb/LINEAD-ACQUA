@@ -268,7 +268,7 @@ export function ChapterTour() {
 
       {ROOMS.map((r, i) => (
         <div key={r.id} className="tour-stanza group pointer-events-none absolute inset-0">
-          <svg className="absolute inset-0 h-full w-full overflow-visible" aria-hidden>
+          <svg className="absolute inset-0 hidden h-full w-full overflow-visible md:block" aria-hidden>
             {r.labels.map((l, k) => (
               <g key={k} data-label={`${l.x},${l.y},${l.lx},${l.ly}`}>
                 <line

@@ -72,15 +72,16 @@ export function Hero() {
 
   useGSAP(
     () => {
+      const fades = root.current!.querySelectorAll(".hero-fade");
       const split = new SplitText(".hero-titolo", { type: "lines,chars", mask: "lines", linesClass: "split-mask" });
       const reveal = () => {
         const r = window.matchMedia(MQ.reduced).matches;
         gsap
           .timeline({ defaults: { ease: "lusso" } })
           .from(split.chars, { yPercent: r ? 0 : 115, opacity: r ? 0 : 1, duration: r ? 1 : 1.8, stagger: r ? 0 : 0.032 }, 0.2)
-          .from(".hero-fade", { opacity: 0, duration: 1.6, stagger: 0.15 }, r ? 0 : 1.2);
+          .from(fades, { opacity: 0, duration: 1.6, stagger: 0.15 }, r ? 0 : 1.2);
       };
-      gsap.set(".hero-fade", { opacity: 1 });
+      gsap.set(fades, { opacity: 1 });
       const html = document.documentElement;
       if (html.classList.contains("intro-attiva")) gsap.set(split.chars, { yPercent: 115 });
       let started = false;
@@ -145,7 +146,7 @@ export function Hero() {
           alt="Lo yacht LDA 32 Aurora fende il mare al tramonto, ripreso dall'alto mentre lascia una lunga scia bianca"
           fill
           priority
-          sizes="100vw"
+          sizes="(min-width: 768px) 100vw, 1px"
           className="hidden object-cover md:block"
         />
         <Image
@@ -153,7 +154,7 @@ export function Hero() {
           alt="Lo yacht LDA 32 Aurora visto dall'alto al tramonto, con la scia sul mare blu"
           fill
           priority
-          sizes="100vw"
+          sizes="(max-width: 767px) 100vw, 1px"
           className="object-cover md:hidden"
         />
         {caps.hydrated && (

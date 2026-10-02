@@ -20,7 +20,8 @@ export function SmoothScroll() {
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
+    // lag smoothing attivo: se il thread si blocca (shader, decode) le timeline rallentano invece di saltare
+    gsap.ticker.lagSmoothing(500, 33);
     return () => {
       gsap.ticker.remove(tick);
       lenis.destroy();

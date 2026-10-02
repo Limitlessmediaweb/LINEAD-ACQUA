@@ -29,6 +29,16 @@ if (!args.intro) await page.addInitScript(() => sessionStorage.setItem("lda-intr
 await page.goto(url, { waitUntil: "networkidle", timeout: 120000 });
 await page.waitForTimeout(args.intro ? +(args.introwait || 2500) : 2000);
 
+// su mobile i capitoli si armano scendendo: prima si percorre la pagina una volta
+if (w < 768) {
+  for (let i = 0; i < 40; i++) {
+    const done = await page.evaluate(() => { window.scrollBy(0, innerHeight * 1.2); return scrollY + innerHeight >= document.documentElement.scrollHeight - 2; });
+    await page.waitForTimeout(150);
+    if (done) break;
+  }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(800);
+}
 const tag = args.tag || `${w}x${h}`;
 // --plan "linea:0.1,0.5|giorno:0,1" = più capitoli in una sola sessione
 const plan = args.plan ? String(args.plan).split("|").flatMap((p) => { const [s, fr] = p.split(":"); return fr.split(",").map((f) => ["#" + s, +f]); }) : at.map((f) => [args.sel, f]);

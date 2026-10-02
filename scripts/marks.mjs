@@ -1,3 +1,4 @@
+// Misura reale (CPU 4×, viewport mobile): candidati LCP, long task, classe finale. Uso: node scripts/marks.mjs
 import { chromium } from "@playwright/test";
 const b = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", args: ["--headless=new"] });
 const ctx = await b.newContext({ viewport: { width: 412, height: 823 }, isMobile: true, hasTouch: true });

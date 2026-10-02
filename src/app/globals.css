@@ -178,7 +178,8 @@ html.intro-attiva {
 html.intro-attiva body {
   background: #000;
 }
-html.intro-attiva [data-film],
+/* le sezioni sotto la piega non si nascondono: sono fuori schermo, e il cambio di visibilità
+   a fine intro costerebbe un ricalcolo di stile dell'intera pagina */
 html.intro-attiva header {
   visibility: hidden;
 }
@@ -201,4 +202,12 @@ html.intro-attiva header {
   :root {
     --gutter: clamp(4.75rem, 6vw, 6.5rem);
   }
+}
+
+/* intro: sopra l'hero (già dipinto sotto, LCP rapido) un velo nero; con WebGL (desktop) l'hero resta nascosto */
+html.intro-attiva #intro.intro-nero {
+  background: #000;
+}
+html.intro-attiva.intro-gl #orizzonte {
+  visibility: hidden;
 }

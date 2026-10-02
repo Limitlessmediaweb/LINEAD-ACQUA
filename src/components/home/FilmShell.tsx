@@ -4,23 +4,35 @@ import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { emit } from "@/lib/bus";
 import { ScrollTrigger } from "@/lib/gsap";
+import { getLenis } from "@/components/global/SmoothScroll";
+import { armTo } from "./chapter";
 import { CHAPTERS } from "@/lib/data";
-import { useFilmCaps } from "@/lib/useMedia";
+import { useGLGate } from "@/lib/useMedia";
 import { ChapterIndicator } from "@/components/global/ChapterIndicator";
 
 const GLStage = dynamic(() => import("@/components/gl/GLStage"), { ssr: false });
 
 /** Infrastruttura del film: stage WebGL condiviso, bande letterbox, indicatore dei capitoli. */
 export function FilmShell() {
-  const caps = useFilmCaps();
+  const gl = useGLGate();
 
-  // tutti i pin sono montati: si ricalcolano le posizioni nell'ordine del documento
+  // arrivo con un'ancora (/#prova, /#flotta): si armano tutti i capitoli, poi si scorre lì
   useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      ScrollTrigger.sort();
+    // su desktop (e senza vincoli di Lighthouse mobile) si arma tutto subito
+    if (window.matchMedia("(min-width: 768px)").matches) armTo(99);
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    armTo(99);
+    const t = window.setTimeout(() => {
       ScrollTrigger.refresh();
-    });
-    return () => cancelAnimationFrame(id);
+      const el = document.getElementById(id);
+      if (!el) return;
+      const target = el.parentElement?.classList.contains("pin-spacer") ? el.parentElement : el;
+      const lenis = getLenis();
+      if (lenis) lenis.scrollTo(target, { immediate: true, force: true });
+      else target.scrollIntoView();
+    }, 150);
+    return () => window.clearTimeout(t);
   }, []);
 
   // bande letterbox di base
@@ -72,7 +84,7 @@ export function FilmShell() {
 
   return (
     <>
-      {caps.gl && <GLStage />}
+      {gl && <GLStage />}
       <ChapterIndicator />
     </>
   );

@@ -47,7 +47,8 @@ export function Grain() {
       ctx.fillRect(0, 0, canvas.width + TILE, canvas.height + TILE);
       ctx.restore();
     };
-    const still = window.matchMedia(MQ.reduced).matches;
+    // grana ferma con meno movimento e sui dispositivi touch (meno lavoro di composizione)
+    const still = window.matchMedia(MQ.reduced).matches || !window.matchMedia("(pointer: fine)").matches;
     if (still) {
       ctx.fillStyle = tiles[0];
       ctx.fillRect(0, 0, canvas.width, canvas.height);

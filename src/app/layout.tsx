@@ -11,7 +11,7 @@ import { ConceptBadge } from "@/components/global/ConceptBadge";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["300"],
   style: ["normal", "italic"],
   variable: "--font-cormorant",
   display: "swap",
@@ -19,7 +19,7 @@ const serif = Cormorant_Garamond({
 
 const sans = Manrope({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["300", "400"],
   variable: "--font-manrope",
   display: "swap",
 });

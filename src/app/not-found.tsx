@@ -14,6 +14,7 @@ export default function NotFound() {
       </h1>
       <p className="mt-6 max-w-sm text-sm leading-relaxed text-spuma/70">La pagina che cercate non è su nessuna carta nautica. La bussola sta ancora cercando il nord.</p>
       <Link
+        prefetch={false}
         href="/"
         className="etichetta group mt-10 inline-flex items-center gap-4 border border-ottone/60 px-7 py-4 text-[0.66rem] text-spuma transition-colors duration-700 hover:bg-ottone hover:text-abisso"
       >

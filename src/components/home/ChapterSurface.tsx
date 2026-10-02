@@ -5,9 +5,9 @@ import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import { gsap, useGSAP, MQ } from "@/lib/gsap";
 import { emit } from "@/lib/bus";
-import { useFilmCaps } from "@/lib/useMedia";
+import { useGLGate } from "@/lib/useMedia";
 import { glState } from "@/components/gl/state";
-import { ChapterTitle } from "./chapter";
+import { ChapterTitle, useArmed } from "./chapter";
 import { TrialForm } from "./TrialForm";
 
 const DiveView = dynamic(() => import("@/components/gl/scenes").then((m) => m.DiveView), { ssr: false });
@@ -15,13 +15,15 @@ const DiveView = dynamic(() => import("@/components/gl/scenes").then((m) => m.Di
 /** Capitolo VIII — Sotto la superficie: la camera scende sotto il pelo dell'acqua. */
 export function ChapterSurface() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 8);
   const pin = useRef<HTMLDivElement>(null);
-  const caps = useFilmCaps();
+  const gl = useGLGate();
   const [glReady, setGlReady] = useState(false);
   const onReady = useCallback(() => setGlReady(true), []);
 
   useGSAP(
     () => {
+      if (!armed) return;
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
         const tl = gsap.timeline({
@@ -49,10 +51,10 @@ export function ChapterSurface() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
-  const hideDom = caps.gl && glReady;
+  const hideDom = gl && glReady;
 
   return (
     <section ref={root} id="superficie" data-film className="relative" aria-labelledby="sup-titolo">
@@ -65,7 +67,7 @@ export function ChapterSurface() {
             <Image src="/media/underwater.webp" alt="" fill sizes="100vw" className="object-cover" />
           </div>
         </div>
-        {caps.gl && <DiveView above="/media/hero-169.webp" below="/media/underwater.webp" mode="dive" onReady={onReady} />}
+        {gl && <DiveView above="/media/hero-169.webp" below="/media/underwater.webp" mode="dive" onReady={onReady} />}
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-abisso/80 via-transparent to-transparent" />
         <p className="sr-only">
           La vista scende sotto il pelo dell’acqua: dal mare al tramonto allo scafo visto da sotto, con i raggi di luce.

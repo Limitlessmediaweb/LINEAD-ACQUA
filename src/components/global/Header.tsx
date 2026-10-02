@@ -8,18 +8,23 @@ import { Menu } from "./Menu";
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  // le immagini di sfondo del menu si scaricano solo dopo la prima apertura
+  const [armed, setArmed] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   return (
     <>
       <header className="gutter pointer-events-none fixed inset-x-0 top-0 z-[75] flex items-center justify-between pt-3 md:pt-5">
-        <Link href="/" aria-label="LINEA D’ACQUA, torna all’inizio" className="pointer-events-auto block py-3 text-spuma">
+        <Link prefetch={false} href="/" aria-label="LINEA D’ACQUA, torna all’inizio" className="pointer-events-auto block py-3 text-spuma">
           <Wordmark className="h-[12px] w-auto md:h-[15px]" line={false} />
         </Link>
         <div className="pointer-events-auto flex items-center gap-5 md:gap-10">
           <SoundToggle />
           <button
             type="button"
-            onClick={() => setOpen((o) => !o)}
+            onClick={() => {
+              setArmed(true);
+              setOpen((o) => !o);
+            }}
             aria-expanded={open}
             aria-controls="menu-principale"
             className="etichetta group relative z-[90] flex items-center gap-3 py-3 text-spuma/90 hover:text-spuma"
@@ -40,7 +45,7 @@ export function Header() {
           </button>
         </div>
       </header>
-      <Menu open={open} onClose={close} />
+      <Menu open={open} onClose={close} armed={armed} />
     </>
   );
 }

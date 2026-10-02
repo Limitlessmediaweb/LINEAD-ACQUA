@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { gsap, useGSAP, MQ } from "@/lib/gsap";
-import { ChapterTitle } from "./chapter";
+import { ChapterTitle, useArmed } from "./chapter";
 import { BLUEPRINT, DIMENSIONS, VB, WATERLINE } from "./blueprint";
 
 const fmt = (v: number, dec: number) => v.toFixed(dec).replace(".", ",");
@@ -17,6 +17,7 @@ const STATS = [
 /** Capitolo II — Dalla linea allo scafo: il progetto si disegna e diventa fotografia. */
 export function ChapterLine() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 2);
   const svg = useRef<SVGSVGElement>(null);
 
   // spessore del tratto costante in pixel, qualunque sia la scala del disegno
@@ -33,6 +34,7 @@ export function ChapterLine() {
 
   useGSAP(
     () => {
+      if (!armed) return;
       const counters = gsap.utils.toArray<HTMLElement>(".bp-cnt");
       const wl = (WATERLINE * 100).toFixed(2);
       const closed = `inset(${wl}% 0% ${(100 - +wl).toFixed(2)}% 0%)`;
@@ -73,7 +75,7 @@ export function ChapterLine() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   return (

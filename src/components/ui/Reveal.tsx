@@ -66,7 +66,8 @@ export function SplitReveal({
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add(MQ.motion, () => {
+      // su mobile il titolo (spesso l'LCP) è subito visibile: entra solo su desktop
+      mm.add(MQ.desktop, () => {
         const split = new SplitText(ref.current!, { type: "lines,chars", mask: "lines", linesClass: "split-mask" });
         gsap.from(split.chars, {
           yPercent: 115,

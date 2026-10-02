@@ -1,0 +1,23 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", args: ["--headless=new"] });
+const ctx = await b.newContext({ viewport: { width: 412, height: 823 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1.75 });
+const p = await ctx.newPage();
+const cdp = await ctx.newCDPSession(p);
+await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+const events = [];
+cdp.on("Tracing.dataCollected", (d) => events.push(...d.value));
+await cdp.send("Tracing.start", { categories: "devtools.timeline,disabled-by-default-devtools.timeline,blink.user_timing", transferMode: "ReportEvents" });
+await p.goto("http://localhost:3211/", { waitUntil: "load" });
+await p.waitForTimeout(9000);
+const done = new Promise((r) => cdp.once("Tracing.tracingComplete", r));
+await cdp.send("Tracing.end"); await done;
+const main = events.filter((e) => e.ph === "X" && e.dur);
+const agg = new Map();
+for (const e of main) agg.set(e.name, (agg.get(e.name) || 0) + e.dur / 1000);
+console.log([...agg.entries()].sort((a, b) => b[1] - a[1]).slice(0, 18).map(([k, v]) => `${Math.round(v)}ms ${k}`).join("\n"));
+// layout con stack
+const lays = main.filter(e => e.name === "Layout").sort((a,b)=>b.dur-a.dur).slice(0,6);
+for (const l of lays) console.log("LAYOUT", Math.round(l.dur/1000), "ms nodes", l.args?.beginData?.dirtyObjects, JSON.stringify(l.args?.beginData?.stackTrace?.[0]||"").slice(0,150));
+const ups = main.filter(e => e.name === "UpdateLayoutTree").length, lc = main.filter(e => e.name === "Layout").length;
+console.log("layout count", lc, "style count", ups);
+await b.close();

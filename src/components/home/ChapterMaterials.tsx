@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { gsap, useGSAP, MQ } from "@/lib/gsap";
 import { MATERIALS } from "@/lib/data";
-import { ChapterTitle } from "./chapter";
+import { useMedia } from "@/lib/useMedia";
+import { ChapterTitle, useArmed } from "./chapter";
 
 const LENS = 220;
 const ZOOM = 1.6;
@@ -12,8 +13,10 @@ const ZOOM = 1.6;
 /** Capitolo V — Materia: quattro macro che si susseguono a tendina, con una lente al cursore. */
 export function ChapterMaterials() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 5);
   const stage = useRef<HTMLDivElement>(null);
   const active = useRef(0);
+  const fine = useMedia("(pointer: fine)");
 
   // lente d'ingrandimento con inerzia (solo puntatore fine)
   useEffect(() => {
@@ -59,10 +62,11 @@ export function ChapterMaterials() {
       el.removeEventListener("pointerenter", enter);
       el.removeEventListener("pointerleave", leave);
     };
-  }, []);
+  }, [fine]);
 
   useGSAP(
     () => {
+      if (!armed) return;
       const shots = gsap.utils.toArray<HTMLElement>(".mat-foto");
       const names = gsap.utils.toArray<HTMLElement>(".mat-nome");
       const notes = gsap.utils.toArray<HTMLElement>(".mat-nota");
@@ -107,7 +111,7 @@ export function ChapterMaterials() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   return (
@@ -143,6 +147,7 @@ export function ChapterMaterials() {
             <Image src={m.src} alt={m.alt} fill sizes="(max-width: 768px) 70vw, 34vw" className="object-cover" />
           </div>
         ))}
+        {fine && (
         <div
           aria-hidden
           className="lente pointer-events-none absolute left-0 top-0 z-10 overflow-clip rounded-full border border-ottone/70 opacity-0"
@@ -153,6 +158,7 @@ export function ChapterMaterials() {
             <img key={m.id} src={m.src} alt="" loading="lazy" decoding="async" className="lente-img absolute left-0 top-0 max-w-none object-cover opacity-0" />
           ))}
         </div>
+        )}
       </div>
 
       <div className="gutter absolute inset-x-0 bottom-[7svh] z-10 md:bottom-[10svh]">

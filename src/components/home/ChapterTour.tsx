@@ -6,7 +6,7 @@ import { gsap, ScrollTrigger, useGSAP, MQ } from "@/lib/gsap";
 import { emit } from "@/lib/bus";
 import { ROOMS } from "@/lib/data";
 import { useFilmCaps } from "@/lib/useMedia";
-import { ChapterTitle } from "./chapter";
+import { ChapterTitle, useArmed } from "./chapter";
 
 const FRAME = { w: 16, h: 9 };
 
@@ -101,6 +101,7 @@ function coverRect(cw: number, ch: number) {
 /** Capitolo IV — A bordo: sembra di camminare dentro lo yacht. */
 export function ChapterTour() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 4);
   const canvas = useRef<HTMLCanvasElement>(null);
   const caps = useFilmCaps();
 
@@ -201,6 +202,7 @@ export function ChapterTour() {
 
   useGSAP(
     () => {
+      if (!armed) return;
       const rooms = gsap.utils.toArray<HTMLElement>(".tour-stanza");
       const n = ROOMS.length;
       let current = -1;
@@ -239,7 +241,7 @@ export function ChapterTour() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   if (caps.reduced) {

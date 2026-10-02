@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { gsap, useGSAP, MQ } from "@/lib/gsap";
 import { HULLS, WOODS, MODELS } from "@/lib/data";
-import { ChapterTitle } from "./chapter";
+import { ChapterTitle, useArmed } from "./chapter";
 
 const AURORA = MODELS.find((m) => m.slug === "aurora")!;
 const WL = AURORA.waterline; // linea di galleggiamento nella foto
@@ -13,12 +13,14 @@ const SHEER = 0.52; // cavallino: dove finisce lo scafo e inizia la sovrastruttu
 /** Capitolo VII — Il vostro yacht: il colore sale dalla linea di galleggiamento, come l'acqua. */
 export function ChapterConfigurator() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 7);
   const [hull, setHull] = useState(0);
   const [wood, setWood] = useState(0);
   const z = useRef(1);
 
   useGSAP(
     () => {
+      if (!armed) return;
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
         gsap
@@ -34,7 +36,7 @@ export function ChapterConfigurator() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   const chooseHull = (i: number) => {

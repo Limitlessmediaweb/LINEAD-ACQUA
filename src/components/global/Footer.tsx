@@ -7,7 +7,7 @@ import { useCallback, useRef, useState } from "react";
 import { gsap, useGSAP, MQ } from "@/lib/gsap";
 import { emit } from "@/lib/bus";
 import { SITE } from "@/lib/data";
-import { useFilmCaps } from "@/lib/useMedia";
+import { useGLGate } from "@/lib/useMedia";
 import { glState } from "@/components/gl/state";
 import { Wordmark } from "@/components/ui/Wordmark";
 
@@ -23,10 +23,10 @@ const LINKS = [
 /** Footer: si risale in superficie (shader al contrario) e il wordmark si specchia nell'acqua. */
 export function Footer({ rise = false }: { rise?: boolean }) {
   const root = useRef<HTMLElement>(null);
-  const caps = useFilmCaps();
+  const gate = useGLGate();
   const [glReady, setGlReady] = useState(false);
   const onReady = useCallback(() => setGlReady(true), []);
-  const useGL = rise && caps.gl;
+  const useGL = rise && gate;
 
   useGSAP(
     () => {
@@ -84,7 +84,7 @@ export function Footer({ rise = false }: { rise?: boolean }) {
             <ul className="flex flex-wrap gap-x-8 gap-y-3">
               {LINKS.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="etichetta py-2 text-[0.62rem] text-spuma/75 transition-colors duration-500 hover:text-spuma">
+                  <Link prefetch={false} href={l.href} className="etichetta py-2 text-[0.62rem] text-spuma/75 transition-colors duration-500 hover:text-spuma">
                     {l.label}
                   </Link>
                 </li>

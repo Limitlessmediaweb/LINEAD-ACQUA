@@ -11,7 +11,7 @@ import { getLenis } from "./SmoothScroll";
 const ROMAN = ["I", "II", "III", "IV"];
 
 /** Menu a tutto schermo: due bande che si chiudono al centro, come il letterbox. */
-export function Menu({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function Menu({ open, onClose, armed }: { open: boolean; onClose: () => void; armed: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
   const [hover, setHover] = useState(0);
@@ -20,6 +20,7 @@ export function Menu({ open, onClose }: { open: boolean; onClose: () => void }) 
 
   useGSAP(
     () => {
+      if (!armed) return;
       const r = window.matchMedia(MQ.reduced).matches;
       const split = new SplitText(".menu-voce", { type: "chars", mask: "chars" });
       tl.current = gsap
@@ -30,9 +31,10 @@ export function Menu({ open, onClose }: { open: boolean; onClose: () => void }) 
         .fromTo(".menu-sfondo", { opacity: 0 }, { opacity: 1, duration: r ? 0.01 : 1.2 }, r ? 0 : 0.6)
         .from(split.chars, { yPercent: 110, duration: r ? 0.01 : 1.2, stagger: r ? 0 : 0.022 }, r ? 0 : 0.7)
         .from(".menu-fade", { opacity: 0, y: r ? 0 : 12, duration: r ? 0.01 : 1, stagger: r ? 0 : 0.08 }, r ? 0 : 1);
+      if (open) tl.current.play();
       return () => split.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   useEffect(() => {
@@ -82,7 +84,8 @@ export function Menu({ open, onClose }: { open: boolean; onClose: () => void }) 
       <div className="menu-banda-t absolute inset-x-0 top-0 h-1/2 origin-top bg-abisso" />
       <div className="menu-banda-b absolute inset-x-0 bottom-0 h-1/2 origin-bottom bg-abisso" />
       <div className="menu-sfondo absolute inset-0">
-        {NAV.map((n, i) => (
+        {armed &&
+          NAV.map((n, i) => (
           <Image
             key={n.href}
             src={n.img}
@@ -101,6 +104,7 @@ export function Menu({ open, onClose }: { open: boolean; onClose: () => void }) 
             {NAV.map((n, i) => (
               <li key={n.href}>
                 <Link
+                  prefetch={false}
                   href={n.href}
                   onMouseEnter={() => setHover(i)}
                   onFocus={() => setHover(i)}
@@ -123,6 +127,7 @@ export function Menu({ open, onClose }: { open: boolean; onClose: () => void }) 
             {MODELS.map((m) => (
               <li key={m.slug}>
                 <Link
+                  prefetch={false}
                   href={`/flotta/${m.slug}`}
                   onClick={onClose}
                   className="flex items-baseline justify-between border-b border-spuma/10 py-3 text-sm text-spuma/75 transition-colors duration-500 hover:text-spuma"

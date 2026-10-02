@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, MQ } from "@/lib/gsap";
@@ -13,7 +13,9 @@ export function SmoothScroll() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (window.matchMedia(MQ.reduced).matches) return;
+    // Su touch Lenis non addolcisce (lo scroll resta nativo) ma leggerebbe la posizione a ogni
+    // fotogramma: su telefono lo scroll nativo è già il più fluido e costa zero.
+    if (window.matchMedia(MQ.reduced).matches || !window.matchMedia("(pointer: fine)").matches) return;
     const lenis = new Lenis({ lerp: 0.07, wheelMultiplier: 0.85, anchors: { offset: 0 } });
     lenisInstance = lenis;
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
@@ -29,16 +31,25 @@ export function SmoothScroll() {
     };
   }, []);
 
-  // Ricalcolo dopo font e media: le altezze dei pin dipendono da entrambi.
+  // ScrollTrigger si ricalcola da solo al "load"; qui solo se i font arrivano dopo.
   useEffect(() => {
-    const refresh = () => ScrollTrigger.refresh();
-    document.fonts?.ready.then(refresh);
-    window.addEventListener("load", refresh, { once: true });
-    return () => window.removeEventListener("load", refresh);
+    if (document.readyState === "complete") return;
+    let loaded = false;
+    const onLoad = () => (loaded = true);
+    window.addEventListener("load", onLoad, { once: true });
+    document.fonts?.ready.then(() => {
+      if (loaded) ScrollTrigger.refresh();
+    });
+    return () => window.removeEventListener("load", onLoad);
   }, []);
 
-  // A ogni cambio pagina si riparte dall'alto.
+  // A ogni cambio pagina si riparte dall'alto (al primo caricamento ci pensano font e load).
+  const first = useRef(true);
   useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
     lenisInstance?.scrollTo(0, { immediate: true, force: true });
     const id = requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => cancelAnimationFrame(id);

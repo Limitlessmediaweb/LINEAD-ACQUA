@@ -6,16 +6,18 @@ import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP, MQ } from "@/lib/gsap";
 import { MODELS } from "@/lib/data";
 import { Odometer } from "@/components/ui/Odometer";
-import { ChapterTitle } from "./chapter";
+import { ChapterTitle, useArmed } from "./chapter";
 
 /** Capitolo VI — La flotta: scorrimento orizzontale lento, i dati si trasformano come un contatore. */
 export function ChapterFleet() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 6);
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
 
   useGSAP(
     () => {
+      if (!armed) return;
       const mm = gsap.matchMedia();
       mm.add(MQ.motion, () => {
         const panels = gsap.utils.toArray<HTMLElement>(".flotta-pannello");
@@ -46,7 +48,7 @@ export function ChapterFleet() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   const m = MODELS[idx];
@@ -86,6 +88,7 @@ export function ChapterFleet() {
               <div className="mt-[-4%] flex items-start justify-between gap-6">
                 <p className="max-w-xs text-sm leading-relaxed text-spuma/65">{model.tagline}</p>
                 <Link
+                  prefetch={false}
                   href={`/flotta/${model.slug}`}
                   data-cursor="scopri"
                   className="etichetta group flex shrink-0 items-center gap-3 py-3 text-[0.62rem] text-spuma/80 hover:text-spuma"

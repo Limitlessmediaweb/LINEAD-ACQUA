@@ -14,12 +14,14 @@ export type Events = {
   "chapter:active": number;
   /** la texture video dell'hero è pronta in WebGL */
   "gl:heroReady": void;
+  /** capitoli armati fino a questo numero (1-8); 99 = tutti */
+  "film:armTo": number;
 };
 
 const map = new Map<keyof Events, Set<Handler<never>>>();
 // ultimo valore emesso: chi si iscrive dopo lo riceve subito (eventi "di stato")
 const last = new Map<keyof Events, unknown>();
-const STICKY: (keyof Events)[] = ["letterbox:base", "chapter:active"];
+const STICKY: (keyof Events)[] = ["letterbox:base", "chapter:active", "film:armTo"];
 
 export function on<K extends keyof Events>(key: K, fn: Handler<Events[K]>) {
   if (!map.has(key)) map.set(key, new Set());

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { on } from "@/lib/bus";
+import { armTo } from "@/components/home/chapter";
+import { ScrollTrigger } from "@/lib/gsap";
 import { CHAPTERS } from "@/lib/data";
 import { getLenis } from "./SmoothScroll";
 
@@ -11,11 +13,19 @@ export function ChapterIndicator() {
   useEffect(() => on("chapter:active", setActive), []);
 
   const go = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const lenis = getLenis();
-    if (lenis) lenis.scrollTo(el, { duration: 2.4 });
-    else el.scrollIntoView();
+    armTo(99);
+    // due fotogrammi: i capitoli creano i loro pin, poi si ricalcola e si scorre
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+        const el = document.getElementById(id);
+        if (!el) return;
+        const target = el.parentElement?.classList.contains("pin-spacer") ? el.parentElement : el;
+        const lenis = getLenis();
+        if (lenis) lenis.scrollTo(target, { duration: 2.4 });
+        else target.scrollIntoView();
+      })
+    );
   };
 
   return (

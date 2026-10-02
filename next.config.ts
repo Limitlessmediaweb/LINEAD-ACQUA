@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    // 60 per i poster a tutto schermo (sotto grana e vignettatura la differenza non si vede)
+    qualities: [60, 75],
+  },
 };
 
 export default nextConfig;

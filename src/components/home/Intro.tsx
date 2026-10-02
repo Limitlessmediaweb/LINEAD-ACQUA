@@ -23,6 +23,8 @@ export function Intro() {
   const word = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(true);
   const caps = useFilmCaps();
+  // acqua in WebGL solo su desktop; su mobile la versione CSS/SVG (leggera, LCP immediato)
+  const glIntro = caps.gl && !caps.mobile;
   const tl = useRef<gsap.core.Timeline | null>(null);
 
   const finish = () => {
@@ -51,6 +53,7 @@ export function Intro() {
         return;
       }
       html.classList.add("intro-attiva");
+      html.classList.toggle("intro-gl", glIntro);
       getLenis()?.stop();
       window.scrollTo(0, 0);
       glState.hero.fade = 0;
@@ -99,7 +102,7 @@ export function Intro() {
         .to(".intro-acqua-fallback", { opacity: 0, duration: 1.2 }, 5.9)
         .to(lineWrap.current, { opacity: 0, duration: 1 }, 7.1);
     },
-    { scope: root, dependencies: [caps.hydrated] }
+    { scope: root, dependencies: [caps.hydrated, glIntro] }
   );
 
   // pulizia se si lascia la home durante l'intro
@@ -125,11 +128,11 @@ export function Intro() {
   const aspect = WORDMARK.width / WORDMARK.capHeight;
 
   return (
-    <div ref={root} id="intro" className="fixed inset-0 z-[100] text-spuma" role="region" aria-label="Introduzione">
-      {caps.gl && <IntroWaterView word={word} line={lineWrap} />}
+    <div ref={root} id="intro" className={`fixed inset-0 z-[100] text-spuma transition-colors duration-[1600ms] ${glIntro ? "" : "intro-nero"}`} role="region" aria-label="Introduzione">
+      {glIntro && <IntroWaterView word={word} line={lineWrap} />}
 
       {/* acqua di riserva senza WebGL: gradiente + riflesso SVG */}
-      {!caps.gl && !caps.reduced && (
+      {!glIntro && !caps.reduced && (
         <div className="intro-acqua-fallback absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-b from-notte to-black opacity-0">
           <svg
             viewBox={`0 ${-WORDMARK.capHeight} ${WORDMARK.width} ${WORDMARK.capHeight}`}

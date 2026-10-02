@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { gsap, useGSAP, MQ } from "@/lib/gsap";
 import { DAY } from "@/lib/data";
-import { ChapterTitle } from "./chapter";
+import { ChapterTitle, useArmed } from "./chapter";
 
 const IMG = { w: 2688, h: 1520 };
 /** luci di bordo nell'immagine notturna (coordinate 0-1) e ordine di accensione */
@@ -28,6 +28,7 @@ const hhmm = (m: number) => `${pad(Math.floor(m / 60) % 24)}:${pad(Math.floor(m 
 /** Capitolo III — Un giorno in mare: la stessa baia, cinque ore, il tempo passa con lo scroll. */
 export function ChapterDay() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed(root, 3);
   const frame = useRef<HTMLDivElement>(null);
 
   // posiziona le luci seguendo la logica di object-fit: cover dell'immagine
@@ -54,6 +55,7 @@ export function ChapterDay() {
 
   useGSAP(
     () => {
+      if (!armed) return;
       const imgs = gsap.utils.toArray<HTMLElement>(".giorno-img");
       const lines = gsap.utils.toArray<HTMLElement>(".giorno-frase");
       const timeEl = root.current!.querySelector<HTMLElement>(".giorno-ora")!;
@@ -99,7 +101,7 @@ export function ChapterDay() {
       });
       return () => mm.revert();
     },
-    { scope: root }
+    { scope: root, dependencies: [armed] }
   );
 
   return (

@@ -39,3 +39,38 @@ export function useFilmCaps() {
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
   return { reduced, mobile, fine, gl: gl && !reduced && hydrated, hydrated };
 }
+
+// ───────────── Cancello WebGL ─────────────
+// Su desktop gli shader partono subito (servono all'intro). Su mobile three.js si carica
+// alla prima interazione (tocco, rotella, tasto): il primo caricamento resta leggero e veloce.
+let interacted = false;
+const glListeners = new Set<() => void>();
+let armed = false;
+function armGate() {
+  if (armed || typeof window === "undefined") return;
+  armed = true;
+  const evs = ["pointerdown", "touchstart", "wheel", "keydown"] as const;
+  const go = () => {
+    evs.forEach((e) => window.removeEventListener(e, go));
+    interacted = true;
+    glListeners.forEach((l) => l());
+  };
+  evs.forEach((e) => window.addEventListener(e, go, { passive: true }));
+}
+
+/** true quando gli shader possono essere caricati (vedi sopra). */
+export function useGLGate() {
+  const caps = useFilmCaps();
+  const touched = useSyncExternalStore(
+    (cb) => {
+      armGate();
+      glListeners.add(cb);
+      return () => {
+        glListeners.delete(cb);
+      };
+    },
+    () => interacted,
+    () => false
+  );
+  return caps.gl && (!caps.mobile || touched);
+}

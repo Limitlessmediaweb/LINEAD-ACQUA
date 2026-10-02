@@ -39,7 +39,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         <div className="gutter absolute inset-x-0 bottom-[12svh]">
           <Reveal stagger={0}>
             <p className="etichetta flex items-center gap-4 text-[0.62rem] text-sabbia">
-              <Link href="/#flotta" className="hover:text-spuma">
+              <Link prefetch={false} href="/#flotta" className="hover:text-spuma">
                 La flotta
               </Link>
               <span aria-hidden className="h-px w-8 bg-ottone/60" />
@@ -85,12 +85,13 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
         <Reveal className="mx-auto flex max-w-6xl flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="etichetta text-[0.62rem] text-sabbia">Modello successivo</p>
-            <Link href={`/flotta/${next.slug}`} className="group mt-4 block" data-cursor="scopri">
+            <Link prefetch={false} href={`/flotta/${next.slug}`} className="group mt-4 block" data-cursor="scopri">
               <span className="numero mr-4 text-lg text-ottone">{next.code}</span>
               <span className="titolo text-[clamp(3rem,9vw,7rem)] italic text-spuma transition-colors duration-700 group-hover:text-sabbia">{next.name}</span>
             </Link>
           </div>
           <Link
+            prefetch={false}
             href="/#prova"
             className="etichetta group flex items-center gap-4 self-start border border-ottone/60 px-7 py-4 text-[0.66rem] text-spuma transition-colors duration-700 hover:bg-ottone hover:text-abisso md:self-auto"
           >

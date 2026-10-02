@@ -1,21 +1,26 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger, SplitText, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, SplitText, useGSAP, MQ } from "@/lib/gsap";
 import { on } from "@/lib/bus";
-import { useFilmCaps } from "@/lib/useMedia";
+import { useFilmCaps, useGLGate } from "@/lib/useMedia";
 import { glState, addRipple, now } from "@/components/gl/state";
 import { ChapterTitle } from "./chapter";
 
 const HeroWaterView = dynamic(() => import("@/components/gl/scenes").then((m) => m.HeroWaterView), { ssr: false });
+
+const common = { alt: "", fill: true, priority: true, quality: 60, sizes: "100vw" } as const;
+const { props: posterDesktop } = getImageProps({ ...common, src: "/media/hero-169.webp" });
+const { props: posterMobile } = getImageProps({ ...common, src: "/media/hero-916.webp" });
 
 /** Capitolo I — L'orizzonte. Video a tutto schermo, titolo gigante, acqua al cursore. */
 export function Hero() {
   const root = useRef<HTMLElement>(null);
   const video = useRef<HTMLVideoElement | null>(null);
   const caps = useFilmCaps();
+  const gl = useGLGate();
   const [glReady, setGlReady] = useState(false);
 
   useEffect(() => on("gl:heroReady", () => setGlReady(true)), []);
@@ -25,12 +30,20 @@ export function Hero() {
     const v = video.current;
     if (!v || !caps.hydrated) return;
     glState.hero.video = v;
+    // durante l'intro il video non si scarica: parte quando l'hero si vede davvero
+    let visible = false;
+    const tryPlay = () => {
+      if (visible && !document.documentElement.classList.contains("intro-attiva")) v.play().catch(() => {});
+    };
     const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) v.play().catch(() => {});
+      visible = e.isIntersecting;
+      if (visible) tryPlay();
       else v.pause();
     });
     io.observe(v);
+    const off = on("intro:done", tryPlay);
     return () => {
+      off();
       io.disconnect();
       if (glState.hero.video === v) glState.hero.video = null;
     };
@@ -39,7 +52,7 @@ export function Hero() {
   // increspature: il mouse sfiora l'acqua; su touch partono al tocco
   useEffect(() => {
     const el = root.current;
-    if (!el || !caps.gl) return;
+    if (!el || !gl) return;
     let last = 0;
     let lx = 0;
     let ly = 0;
@@ -68,27 +81,31 @@ export function Hero() {
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerdown", down);
     };
-  }, [caps.gl]);
+  }, [gl]);
 
   useGSAP(
     () => {
       const fades = root.current!.querySelectorAll(".hero-fade");
-      const split = new SplitText(".hero-titolo", { type: "lines,chars", mask: "lines", linesClass: "split-mask" });
+      // su mobile il titolo resta intero: è l'LCP e lo SplitText ne creerebbe di nuovi, più tardi
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      const split = mobile ? null : new SplitText(".hero-titolo", { type: "lines,chars", mask: "lines", linesClass: "split-mask" });
+      const html = document.documentElement;
+      // Su mobile l'intro è un velo nero sopra l'hero già composto: il titolo è lì sotto e
+      // compare con la dissolvenza del velo (e resta l'LCP della pagina, subito dipinto).
+      const veiled = html.classList.contains("intro-attiva") && window.matchMedia("(max-width: 767px)").matches;
       const reveal = () => {
         const r = window.matchMedia(MQ.reduced).matches;
-        gsap
-          .timeline({ defaults: { ease: "lusso" } })
-          .from(split.chars, { yPercent: r ? 0 : 115, opacity: r ? 0 : 1, duration: r ? 1 : 1.8, stagger: r ? 0 : 0.032 }, 0.2)
-          .from(fades, { opacity: 0, duration: 1.6, stagger: 0.15 }, r ? 0 : 1.2);
+        const tl = gsap.timeline({ defaults: { ease: "lusso" } });
+        if (split && !veiled) tl.from(split.chars, { yPercent: r ? 0 : 115, opacity: r ? 0 : 1, duration: r ? 1 : 1.8, stagger: r ? 0 : 0.032 }, 0.2);
+        tl.from(fades, { opacity: 0, duration: 1.6, stagger: 0.15 }, r || !split || veiled ? 0.4 : 1.2);
       };
       gsap.set(fades, { opacity: 1 });
-      const html = document.documentElement;
-      if (html.classList.contains("intro-attiva")) gsap.set(split.chars, { yPercent: 115 });
+      if (split && html.classList.contains("intro-attiva") && !veiled) gsap.set(split.chars, { yPercent: 115 });
       let started = false;
       const start = () => {
         if (started) return;
         started = true;
-        gsap.set(split.chars, { clearProps: "transform" });
+        if (split) gsap.set(split.chars, { clearProps: "transform" });
         reveal();
       };
       const off = on("intro:done", start);
@@ -122,15 +139,11 @@ export function Hero() {
         off();
         clearTimeout(id);
         mm.revert();
-        split.revert();
+        split?.revert();
       };
     },
     { scope: root }
   );
-
-  useEffect(() => {
-    ScrollTrigger.refresh();
-  }, [glReady]);
 
   const portrait = caps.mobile;
   return (
@@ -138,25 +151,18 @@ export function Hero() {
       {/* media DOM: poster (LCP) + video. In modalità WebGL il video è solo la sorgente della texture. */}
       <div
         className="hero-media absolute inset-0 transition-opacity duration-1000"
-        style={{ opacity: caps.gl && glReady ? 0 : 1 }}
-        aria-hidden={caps.gl && glReady}
+        style={{ opacity: gl && glReady ? 0 : 1 }}
+        aria-hidden={gl && glReady}
       >
-        <Image
-          src="/media/hero-169.webp"
-          alt="Lo yacht LDA 32 Aurora fende il mare al tramonto, ripreso dall'alto mentre lascia una lunga scia bianca"
-          fill
-          priority
-          sizes="(min-width: 768px) 100vw, 1px"
-          className="hidden object-cover md:block"
-        />
-        <Image
-          src="/media/hero-916.webp"
-          alt="Lo yacht LDA 32 Aurora visto dall'alto al tramonto, con la scia sul mare blu"
-          fill
-          priority
-          sizes="(max-width: 767px) 100vw, 1px"
-          className="object-cover md:hidden"
-        />
+        {/* art direction: un solo poster scaricato, verticale su telefono */}
+        <picture>
+          <source media="(min-width: 768px)" srcSet={posterDesktop.srcSet} sizes="100vw" />
+          <img
+            {...posterMobile}
+            alt="Lo yacht LDA 32 Aurora fende il mare al tramonto, ripreso dall'alto mentre lascia una lunga scia bianca"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </picture>
         {caps.hydrated && (
           <video
             key={portrait ? "v" : "h"}
@@ -165,7 +171,7 @@ export function Hero() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             poster={portrait ? "/media/video/hero-916-poster.webp" : "/media/video/hero-169-poster.webp"}
             aria-hidden
             tabIndex={-1}
@@ -175,7 +181,7 @@ export function Hero() {
           </video>
         )}
       </div>
-      {caps.gl && <HeroWaterView />}
+      {gl && <HeroWaterView />}
 
       <div aria-hidden className="scrim-t pointer-events-none absolute inset-x-0 top-0 h-1/2" />
       <div aria-hidden className="scrim-b pointer-events-none absolute inset-x-0 bottom-0 h-2/3" />

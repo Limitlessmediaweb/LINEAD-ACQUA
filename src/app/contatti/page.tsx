@@ -41,6 +41,7 @@ export default function ContattiPage() {
             <div className="space-y-6">
               <p className="titolo text-3xl leading-snug text-spuma">Il modo migliore per conoscerci resta una giornata in mare.</p>
               <Link
+                prefetch={false}
                 href="/#prova"
                 className="etichetta group inline-flex items-center gap-4 border border-ottone/60 px-7 py-4 text-[0.66rem] text-spuma transition-colors duration-700 hover:bg-ottone hover:text-abisso"
               >

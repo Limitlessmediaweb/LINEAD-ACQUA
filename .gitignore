@@ -44,3 +44,7 @@ next-env.d.ts
 /raw/
 /test-results/
 /playwright-report/
+/screenshots/dev/
+/screenshots/*.png
+!/screenshots/final/
+scripts/_dbg.mjs

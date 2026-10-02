@@ -1,26 +1,204 @@
 @import "tailwindcss";
 
+/* ───────────── Token ───────────── */
+@theme {
+  --color-abisso: #060b12;
+  --color-notte: #0d1824;
+  --color-spuma: #f2efe9;
+  --color-sabbia: #c9b99a;
+  --color-ottone: #b8925a;
+
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
+
+  --ease-lusso: cubic-bezier(0.65, 0, 0.35, 1);
+  --tracking-etichetta: 0.3em;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* colori dell'interfaccia che il Capitolo III può far "virare" col cielo */
+  --ui-fg: var(--color-spuma);
+  --ui-bg: var(--color-abisso);
+  --letterbox: 0px;
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: #000;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-abisso);
+  color: var(--color-spuma);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-ottone);
+  color: var(--color-abisso);
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* ───────────── Tipografia ───────────── */
+@utility titolo {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+}
+
+@utility etichetta {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: var(--tracking-etichetta);
+  text-transform: uppercase;
+}
+
+@utility numero {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+@utility gutter {
+  padding-inline: var(--gutter);
+}
+
+/* maschera per le righe di SplitText */
+.split-mask {
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+/* ───────────── Focus ───────────── */
+:focus-visible {
+  outline: 1px solid var(--color-ottone);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 1000;
+  transform: translateY(-200%);
+  background: var(--color-spuma);
+  color: var(--color-abisso);
+  padding: 0.75rem 1rem;
+}
+.skip-link:focus {
+  transform: none;
+}
+
+/* ───────────── Cursore ───────────── */
+@media (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+/* ───────────── Transizioni tra pagine: dissolvenza attraverso il nero ───────────── */
+::view-transition {
+  background: #000;
+}
+::view-transition-old(*) {
+  animation: vt-out 0.7s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+::view-transition-new(*) {
+  animation: vt-in 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.55s both;
+}
+::view-transition-group(*) {
+  animation-duration: 0s;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ───────────── Varie ───────────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* sfumatura di leggibilità riusabile */
+.scrim-b {
+  background: linear-gradient(to top, rgb(6 11 18 / 0.85), rgb(6 11 18 / 0) 60%);
+}
+.scrim-t {
+  background: linear-gradient(to bottom, rgb(6 11 18 / 0.7), rgb(6 11 18 / 0) 45%);
+}
+
+/* ───────────── Intro (una volta per sessione) ───────────── */
+html.intro-attiva {
+  overflow: hidden;
+}
+html.intro-attiva body {
+  background: #000;
+}
+html.intro-attiva [data-film],
+html.intro-attiva header {
+  visibility: hidden;
+}
+header {
+  transition: opacity 1.4s var(--ease-lusso);
+}
+html.intro-attiva header {
+  opacity: 0;
+}
+
+/* le foto "da studio" su fondo scuro si fondono con lo sfondo, senza bordi */
+.sfuma-bordi {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: clamp(4.75rem, 6vw, 6.5rem);
+  }
 }
